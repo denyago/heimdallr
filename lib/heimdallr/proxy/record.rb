@@ -338,6 +338,8 @@ module Heimdallr
 
         if action == :create and attribute == :_id and @record.is_a?(Mongoid::Document)
           # Everything is ok, continue (Mongoid sets _id before saving as opposed to ActiveRecord)
+        elsif action == :create and attribute == :_type and @record.is_a?(Mongoid::Document)
+          # Everything is ok, continue (Mongoid sets _type before saving as opposed to ActiveRecord)
         elsif fixtures.has_key? attribute
           if fixtures[attribute] != value
             raise Heimdallr::PermissionError,

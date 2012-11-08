@@ -64,3 +64,15 @@ class Mongoid::Article
 end
 
 class Mongoid::SubArticle < Mongoid::Article; end
+
+class Mongoid::BaseNews
+  include Mongoid::Document
+  include Heimdallr::Model
+
+  restrict do |user, record|
+      scope :fetch
+      can :create
+  end
+end
+
+class Mongoid::FancyNews < Mongoid::BaseNews; end
