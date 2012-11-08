@@ -93,6 +93,13 @@ def run_specs(user_model, article_model, dont_save_model)
     article.restrict(@looser).should_not be_destroyable
   end
 
+  it "should answer if object is able to do a non-standard action" do
+    article = article_model.create! :owner_id => @john.id, :content => 'test', :secrecy_level => 4
+    article.restrict(@john).able_to?(:foo).should        be_true
+    article.restrict(@admin).able_to?(:foo).should       be_true
+    article.restrict(@looser).able_to?(:foo).should_not  be_true
+  end
+
   it "should not create anything else if it did not saved" do
     expect {
       article_model.restrict(@looser).create! :content => 'test', :secrecy_level => 10, :dont_save => 'ok' rescue nil

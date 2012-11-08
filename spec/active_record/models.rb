@@ -39,7 +39,7 @@ class ActiveRecord::Article < ActiveRecord::Base
       # Administrator or owner can do everything
       scope :fetch
       scope :delete
-      can [:view, :create, :update]
+      can [:view, :create, :update, :foo]
     else
       # Other users can view only their own or non-classified articles...
       scope :fetch,  -> { where('owner_id = ? or secrecy_level < ?', user.id, 5) }
@@ -52,6 +52,7 @@ class ActiveRecord::Article < ActiveRecord::Base
         can :update, {
           secrecy_level: { inclusion: { in: 0..4 } }
         }
+        can :foo
       else
         can    :view
         cannot :view, [:secrecy_level]
