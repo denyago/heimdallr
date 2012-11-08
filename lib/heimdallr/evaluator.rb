@@ -146,10 +146,11 @@ module Heimdallr
     end
 
     # Compute the restrictions for a given +context+ and possibly a specific +record+.
+    # Switches model class to the +klass+ if given.
     # Invokes a +block+ passed to the +initialize+ once.
     #
     # @raise [RuntimeError] if the evaluated block did not define a set of valid restrictions
-    def evaluate(context, record=nil)
+    def evaluate(context, record=nil, klass=nil)
       if [context, record] != @last_context
         @scopes         = {}
         @allowed_fields = Hash.new { [] }
@@ -157,6 +158,8 @@ module Heimdallr
         @fixtures       = Hash.new { {} }
 
         @allowed_fields[:view] += [ :id ]
+
+        @model_class = klass if klass
 
         instance_exec context, record, &@block
 

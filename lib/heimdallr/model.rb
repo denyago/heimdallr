@@ -48,7 +48,8 @@ module Heimdallr
       #
       # @return [Evaluator]
       def restrictions(context, record=nil)
-        heimdallr_restrictions.evaluate(context, record)
+        klass = ( self.class == Class ? self : nil )
+        heimdallr_restrictions.evaluate(context, record, klass)
       end
 
       # @api private

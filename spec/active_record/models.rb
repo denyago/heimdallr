@@ -18,6 +18,11 @@ ActiveRecord::Base.connection.create_table(:articles) do |t|
   t.timestamps
 end
 
+ActiveRecord::Base.connection.create_table(:base_news) do |t|
+  t.string      :type
+  t.timestamps
+end
+
 class ActiveRecord::User < ActiveRecord::Base; end
 
 class ActiveRecord::DontSave < ActiveRecord::Base; end
@@ -68,3 +73,14 @@ class ActiveRecord::Article < ActiveRecord::Base
 end
 
 class ActiveRecord::SubArticle < ActiveRecord::Article; end
+
+class ActiveRecord::BaseNews < ActiveRecord::Base
+  include Heimdallr::Model
+
+  restrict do |user, record|
+      scope :fetch
+      can :create
+  end
+end
+
+class ActiveRecord::FancyNews < ActiveRecord::BaseNews; end
