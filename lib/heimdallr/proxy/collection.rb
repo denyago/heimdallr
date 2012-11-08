@@ -34,6 +34,20 @@ module Heimdallr
       end
     end
 
+    # Tap an insecure chain of scopes for a relation.
+    #
+    # Example:
+    #
+    #   Articles.restrict(current_user).first.commects.insecurely { |relation| relation.as_many.scopes.you_would.like }.class
+    #   #=> Heimdallr::Proxy::Collection
+    #
+    #   @yield A passed block is called with +#self.insecure+ argument and result must respond to restrict.
+    #
+    #   @return self
+    def insecurely(&block)
+      block.call(self.insecure).restrict(reflect_on_security)
+    end
+
     # @private
     # @macro [attach] delegate_as_constructor
     #   A proxy for +$1+ method which adds fixtures to the attribute list and
