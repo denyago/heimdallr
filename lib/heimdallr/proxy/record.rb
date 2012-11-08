@@ -314,6 +314,15 @@ module Heimdallr
       record_in_scope? scope
     end
 
+    # Checks, if restrictions allow to do an +action+.
+    # Standard actions like +:create+, +:update+, +:delete+
+    # and +:fetch+ can be extanded with custom ones.
+    #
+    # @return [Boolean]
+    def able_to?(action)
+      @restrictions.can? action.to_sym
+    end
+
     protected
 
     # Raises an exception if any of the changed attributes are not valid
