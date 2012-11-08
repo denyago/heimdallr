@@ -11,6 +11,11 @@ ActiveRecord::Base.connection.create_table(:dont_saves) do |t|
   t.string      :name
 end
 
+ActiveRecord::Base.connection.create_table(:comments) do |t|
+  t.belongs_to  :article
+  t.boolean     :is_visible
+end
+
 ActiveRecord::Base.connection.create_table(:articles) do |t|
   t.belongs_to  :owner
   t.text        :content
@@ -22,10 +27,25 @@ class ActiveRecord::User < ActiveRecord::Base; end
 
 class ActiveRecord::DontSave < ActiveRecord::Base; end
 
+class ActiveRecord::Comment < ActiveRecord::Base
+  include Heimdallr::Model
+
+  belongs_to :article
+
+  def self.visible
+    self.where(is_visible: true)
+  end
+
+  restrict do |user, record|
+    scope :fetch
+  end
+end
+
 class ActiveRecord::Article < ActiveRecord::Base
   include Heimdallr::Model
 
   belongs_to :owner, :class_name => 'ActiveRecord::User'
+  has_many   :comments
 
   def dont_save=(name)
     ActiveRecord::DontSave.create :name => name

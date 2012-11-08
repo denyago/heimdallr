@@ -1,13 +1,17 @@
-def run_specs(user_model, article_model, dont_save_model)
+def run_specs(user_model, article_model, dont_save_model, comments_model)
   before(:all) do
     user_model.destroy_all
     article_model.destroy_all
+    comments_model.destroy_all
     dont_save_model.destroy_all
 
     @john = user_model.create! :admin => false
     @banned = user_model.create! :banned => true
     article_model.create! :owner_id => @john.id, :content => 'test', :secrecy_level => 10
     article_model.create! :owner_id => @john.id, :content => 'test', :secrecy_level => 3
+
+    comments_model.create! article: article_model.last, is_visible: true
+    comments_model.create! article: article_model.last, is_visible: false
   end
 
   before(:each) do
@@ -21,6 +25,13 @@ def run_specs(user_model, article_model, dont_save_model)
 
     proxy = article_model.restrict(@looser)
     proxy.should be_a_kind_of Heimdallr::Proxy::Collection
+  end
+
+  it "should tap insecure scope methods into relation" do
+    proxy = article_model.last.restrict(@admin).comments.insecurely { |relation| relation.visible }
+
+    proxy.should be_a_kind_of Heimdallr::Proxy::Collection
+    proxy.all.count.should == 1
   end
 
   it "should handle fetch scope" do

@@ -11,6 +11,23 @@ class Mongoid::DontSave
   field :name
 end
 
+class Mongoid::Comment
+  include Mongoid::Document
+  include Mongoid::Timestamps
+
+  belongs_to :article
+
+  include Heimdallr::Model
+
+  def self.visible
+    self.where(is_visible: true)
+  end
+
+  restrict do |user, record|
+    scope :fetch
+  end
+end
+
 class Mongoid::Article
   include Mongoid::Document
   include Mongoid::Timestamps
@@ -19,6 +36,7 @@ class Mongoid::Article
   field :secrecy_level, type: Fixnum
 
   belongs_to :owner, class_name: 'Mongoid::User'
+  has_many   :comments
 
   include Heimdallr::Model
 

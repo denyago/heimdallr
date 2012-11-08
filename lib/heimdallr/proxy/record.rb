@@ -212,7 +212,9 @@ module Heimdallr
             options = @options
           end
 
-          if association.collection? && @eager_loaded.include?(method)
+          if association.kind_of?(Mongoid::Relations::Metadata)
+            Proxy::Collection.new(@context, referenced, options)
+          elsif association.collection? && @eager_loaded.include?(method)
             # Don't re-restrict eagerly loaded collections to not
             # discard preloaded data.
             Proxy::Collection.new(@context, referenced, options)
