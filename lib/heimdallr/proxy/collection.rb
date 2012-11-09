@@ -45,7 +45,7 @@ module Heimdallr
     #
     #   @return self
     def insecurely(&block)
-      block.call(self.insecure).restrict(reflect_on_security)
+      block.call(self.insecure).restrict(@context)
     end
 
     # @private
