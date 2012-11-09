@@ -314,6 +314,8 @@ module Heimdallr
     def destroyable?
       scope = @restrictions.request_scope(:delete)
       record_in_scope? scope
+    rescue
+      false
     end
 
     # Checks, if restrictions allow to do an +action+.
