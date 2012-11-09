@@ -139,10 +139,18 @@ module Heimdallr
 
     # Return a Hash to be mixed in in +reflect_on_security+ methods of {Proxy::Collection}
     # and {Proxy::Record}.
+    #
+    # @deprecated use +#actions+ instead
     def reflection
       {
-        operations: [ :view, :create, :update ].select { |op| can? op }
+        operations: actions
       }
+    end
+
+    # Returns Array to be used in +reflect_on_security+ methods of {Proxy::Collection}
+    # and {Proxy::Record}.
+    def actions
+      ([ :view, :create, :update ] | @allowed_fields.keys ).select { |op| can? op }
     end
 
     # Compute the restrictions for a given +context+ and possibly a specific +record+.

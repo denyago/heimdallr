@@ -111,6 +111,19 @@ def run_specs(user_model, article_model, dont_save_model, comments_model)
     article.restrict(@looser).able_to?(:foo).should_not  be_true
   end
 
+  describe "contains all available actions in reflect_on_security[:operations]" do
+    it "of Proxy::Record" do
+      article = article_model.create! :owner_id => @john.id, :content => 'test', :secrecy_level => 4
+      article.restrict(@john).reflect_on_security[:operations].should   =~ [:create, :view, :update, :delete, :foo]
+      article.restrict(@looser).reflect_on_security[:operations].should =~ [:create, :view]
+    end
+
+    it "of Proxy::Collection" do
+      article_model.restrict(@john).reflect_on_security[:operations].should   =~ [:create, :view]
+      article_model.restrict(@looser).reflect_on_security[:operations].should =~ [:create, :view]
+    end
+  end
+
   it "should not create anything else if it did not saved" do
     expect {
       article_model.restrict(@looser).create! :content => 'test', :secrecy_level => 10, :dont_save => 'ok' rescue nil
