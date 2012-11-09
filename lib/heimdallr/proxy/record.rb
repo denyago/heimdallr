@@ -287,13 +287,15 @@ module Heimdallr
     #
     # @return [Hash]
     def reflect_on_security
+      operations = @restrictions.actions | ( destroyable? ? [:delete] : [] )
       {
         model:        @record.class,
         context:      @context,
         record:       @record,
         options:      @options,
         restrictions: @restrictions,
-      }.merge(@restrictions.reflection)
+        operations:   operations
+      }
     end
 
     def visible?

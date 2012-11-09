@@ -275,7 +275,8 @@ module Heimdallr
         scope:        @scope,
         options:      @options,
         restrictions: @restrictions,
-      }.merge(@restrictions.reflection)
+        operations:   @restrictions.actions
+      }
     end
 
     def creatable?
