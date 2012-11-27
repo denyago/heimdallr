@@ -289,7 +289,7 @@ module Heimdallr
     #
     # @return [Hash]
     def reflect_on_security
-      operations = @restrictions.actions | ( destroyable? ? [:delete] : [] )
+      operations = @restrictions.actions | ( destroyable? ? [:destroy] : [] )
       {
         model:        @record.class,
         context:      @context,
@@ -321,7 +321,7 @@ module Heimdallr
     end
 
     # Checks, if restrictions allow to do an +action+.
-    # Standard actions like +:create+, +:update+, +:delete+
+    # Standard actions like +:create+, +:update+, +:destroy+
     # and +:fetch+ can be extanded with custom ones.
     #
     # @return [Boolean]
