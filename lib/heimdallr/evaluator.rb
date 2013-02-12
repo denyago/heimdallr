@@ -159,7 +159,7 @@ module Heimdallr
     #
     # @raise [RuntimeError] if the evaluated block did not define a set of valid restrictions
     def evaluate(context, record=nil, klass=nil)
-      if [context, record] != @last_context
+      if last_context_changed?(context, record)
         @scopes         = {}
         @allowed_fields = Hash.new { [] }
         @validators     = Hash.new { [] }
@@ -182,7 +182,7 @@ module Heimdallr
         [@scopes, @allowed_fields, @validators, @fixtures].
               map(&:freeze)
 
-        @last_context = [context, record]
+        save_last_context(context, record)
       end
 
       self
@@ -229,6 +229,21 @@ module Heimdallr
     end
 
     private
+
+    def save_last_context(context, record)
+      @last_context = {
+        :context  => (context.try :dup),
+        :record   => (record.try  :dup)
+      }
+    end
+
+    def last_context_changed?(context, record)
+      @last_context ||= {}
+
+      context != @last_context[:context] ||
+        record != @last_context[:record] ||
+          (context.nil? && record.nil?)
+    end
 
     # Monkey-copied from ActiveRecord.
     def _parse_validates_options(options)

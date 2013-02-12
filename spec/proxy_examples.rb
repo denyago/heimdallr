@@ -15,8 +15,23 @@ def run_specs(user_model, article_model, dont_save_model, comments_model)
   end
 
   before(:each) do
-    @admin  = user_model.new :admin => true
-    @looser = user_model.new :admin => false
+    @admin  = user_model.new     :admin => true
+    @looser = user_model.create! :admin => false
+  end
+
+  it 'not caches resrictions' do
+    original_article = article_model.create!(:owner_id => @john.id, :content => 'test', :secrecy_level => 10)
+
+    loaded_article   = article_model.find(original_article)
+    loaded_article.restrict(@looser).should_not be_modifiable
+
+    original_article.owner_id = @looser.id
+    original_article.save!
+
+    loaded_article   = article_model.find(original_article)
+    loaded_article.restrict(@looser).should     be_modifiable
+
+    original_article.destroy.should be_true
   end
 
   it "should apply restrictions" do
