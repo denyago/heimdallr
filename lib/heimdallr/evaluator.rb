@@ -159,31 +159,27 @@ module Heimdallr
     #
     # @raise [RuntimeError] if the evaluated block did not define a set of valid restrictions
     def evaluate(context, record=nil, klass=nil)
-      if last_context_changed?(context, record)
-        @scopes         = {}
-        @allowed_fields = Hash.new { [] }
-        @validators     = Hash.new { [] }
-        @fixtures       = Hash.new { {} }
+      @scopes         = {}
+      @allowed_fields = Hash.new { [] }
+      @validators     = Hash.new { [] }
+      @fixtures       = Hash.new { {} }
 
-        @allowed_fields[:view] += [ :id ]
+      @allowed_fields[:view] += [ :id ]
 
-        @model_class = klass if klass
+      @model_class = klass if klass
 
-        instance_exec context, record, &@block
+      instance_exec context, record, &@block
 
-        unless @scopes[:fetch]
-          raise RuntimeError, "A :fetch scope must be defined"
-        end
-
-        @allowed_fields.each do |action, fields|
-          fields.uniq!
-        end
-
-        [@scopes, @allowed_fields, @validators, @fixtures].
-              map(&:freeze)
-
-        save_last_context(context, record)
+      unless @scopes[:fetch]
+        raise RuntimeError, "A :fetch scope must be defined"
       end
+
+      @allowed_fields.each do |action, fields|
+        fields.uniq!
+      end
+
+      [@scopes, @allowed_fields, @validators, @fixtures].
+            map(&:freeze)
 
       self
     end
@@ -229,21 +225,6 @@ module Heimdallr
     end
 
     private
-
-    def save_last_context(context, record)
-      @last_context = {
-        :context  => (context.try :dup),
-        :record   => (record.try  :dup)
-      }
-    end
-
-    def last_context_changed?(context, record)
-      @last_context ||= {}
-
-      context != @last_context[:context] ||
-        record != @last_context[:record] ||
-          (context.nil? && record.nil?)
-    end
 
     # Monkey-copied from ActiveRecord.
     def _parse_validates_options(options)
